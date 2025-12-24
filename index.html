@@ -387,6 +387,7 @@
 
       /* 🔑 الحل الأساسي */
       function escapeHTML(text) {
+        if (!text) return ""; // لو text undefined أو null نرجع نص فارغ
         return text
           .replace(/&/g, "&amp;")
           .replace(/</g, "&lt;")
