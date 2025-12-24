@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html lang="ar">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>اختبار إلكتروني</title>
+
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        direction: rtl;
+        font-weight: 900;
+        user-select: none;
+      }
+
+      .hidden {
+        display: none !important;
+      }
+
+      #login-container {
+        max-width: 400px;
+        margin: 100px auto;
+        padding: 30px;
+        background-color: #ffffff;
+        border: 2px solid #007bff;
+        border-radius: 15px;
+        box-shadow: 0 5px 25px rgba(0, 123, 255, 0.2);
+        text-align: center;
+      }
+
+      label {
+        font-size: 18px;
+        font-weight: 900;
+        display: block;
+      }
+
+      input {
+        padding: 10px;
+        margin-bottom: 20px;
+      }
+
+      button {
+        padding: 12px;
+        font-size: 18px;
+        font-weight: 900;
+        background: #007bff;
+        color: #fff;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+      }
+
+      #timer {
+        color: red;
+        font-size: 20px;
+        font-weight: bold;
+      }
+
+      #next-button {
+        margin-top: 20px;
+        background-color: #585b5f;
+      }
+
+      ul {
+        list-style: none;
+        padding: 0;
+      }
+
+      ul li {
+        background: #f0f4f8;
+        padding: 10px;
+        margin-bottom: 15px;
+        border-radius: 6px;
+      }
+
+      .correct-answer {
+        color: green;
+      }
+
+      .wrong-answer {
+        color: red;
+      }
+      #login-container {
+        max-width: 400px;
+        margin: 100px auto;
+        padding: 30px;
+        background-color: #ffffff;
+        border: 2px solid #007bff;
+        border-radius: 15px;
+        box-shadow: 0 5px 25px rgba(0, 123, 255, 0.2);
+        text-align: center;
+        transition: all 0.3s ease-in-out;
+      }
+      #login-container label {
+        display: block;
+        font-size: 18px;
+        color: #333;
+        margin-bottom: 8px;
+        text-align: right;
+      }
+      #login-container input {
+        width: 100%;
+        padding: 12px;
+        margin-bottom: 20px;
+        font-size: 16px;
+        border: 1px solid #ccc;
+        border-radius: 8px;
+        box-sizing: border-box;
+      }
+      #dkhol {
+        width: 100%;
+      }
+    </style>
+  </head>
+
+  <body>
+    <h2>التدريب علي اختبارات الجهاز المركزي</h2>
+
+    <div id="login-container">
+      <label for="password">🔒 أدخل كلمة المرور:</label>
+      <input id="password" type="password" placeholder="مثال: 12345678" />
+      <label for="duration">⏳ حدد مدة الاختبار (بالدقائق):</label>
+      <input id="duration" type="number" value="5" min="1" />
+      <button onclick="checkPassword()" id="dkhol">🚀 دخول</button>
+    </div>
+
+    <div id="quiz" class="hidden">
+      <div id="timer"></div>
+      <div id="question-info"></div>
+
+      <form id="quizForm">
+        <div id="question-container"></div>
+        <button id="next-button" type="button" onclick="nextQuestion(event)">
+          التالي
+        </button>
+      </form>
+    </div>
+
+    <div id="result" class="hidden"></div>
+
+    <script>
+      document.addEventListener("keydown", function (e) {
+        if (e.key === "Enter") {
+          const nextBtn = document.getElementById("next-button");
+          if (nextBtn && !nextBtn.classList.contains("hidden")) {
+            nextBtn.click();
+          }
+        }
+      });
+
+      const questions = [
+        {
+          question: "أي من التالي يُستخدم لإرسال بيانات النموذج إلى ملف PHP؟",
+          options: ["<input>", "<form>", "<label>", "<div>"],
+          answer: "<form>",
+          explanation:
+            "وسم form هو المسؤول عن إرسال بيانات النموذج إلى ملف PHP.",
+        },
+        {
+          question: "أي لغة تُستخدم لإنشاء صفحات ويب ديناميكية؟",
+          options: ["HTML", "CSS", "PHP", "SQL"],
+          answer: "PHP",
+          explanation: "PHP تُستخدم لإنشاء صفحات ويب ديناميكية وتفاعلية.",
+        },
+        {
+          question: "أي أمر SQL يُستخدم لإضافة بيانات جديدة إلى جدول؟",
+          options: ["SELECT", "DELETE", "INSERT", "UPDATE"],
+          answer: "INSERT",
+          explanation: "INSERT يُستخدم لإضافة بيانات جديدة إلى الجدول.",
+        },
+        {
+          question: "أي متغير يُستخدم لاستقبال البيانات المرسلة بطريقة POST؟",
+          options: ["$_GET", "$_POST", "$_SERVER", "$_REQUEST_METHOD"],
+          answer: "$_POST",
+          explanation: "$_POST يُستخدم لاستقبال البيانات المرسلة بطريقة POST.",
+        },
+        {
+          question: "ما وظيفة الأمر echo في PHP؟",
+          options: [
+            "تنفيذ أمر SQL",
+            "طباعة البيانات على المتصفح",
+            "الاتصال بقاعدة البيانات",
+            "تخزين البيانات",
+          ],
+          answer: "طباعة البيانات على المتصفح",
+          explanation: "echo تُستخدم لعرض البيانات على المتصفح.",
+        },
+        {
+          question: "أي أمر يُستخدم لإنشاء اتصال بقاعدة البيانات في PHP؟",
+          options: [
+            "connect()",
+            "mysqli_connect()",
+            "new mysqli()",
+            "open database",
+          ],
+          answer: "new mysqli()",
+          explanation:
+            "new mysqli() تُستخدم لإنشاء اتصال بقاعدة البيانات باستخدام OOP.",
+        },
+        {
+          question: "ما وظيفة connect_error؟",
+          options: [
+            "إضافة بيانات للجدول",
+            "حذف بيانات",
+            "التحقق من فشل الاتصال",
+            "عرض البيانات",
+          ],
+          answer: "التحقق من فشل الاتصال",
+          explanation:
+            "connect_error تُستخدم لمعرفة ما إذا فشل الاتصال بقاعدة البيانات.",
+        },
+        {
+          question: "أي برنامج يُستخدم لإنشاء سيرفر محلي؟",
+          options: ["PHP", "SQL", "XAMPP", "HTML"],
+          answer: "XAMPP",
+          explanation: "XAMPP برنامج يوفر سيرفر محلي لتشغيل PHP وMySQL.",
+        },
+        {
+          question: "أي مكون في XAMPP مسؤول عن تشغيل PHP؟",
+          options: ["MySQL", "Apache", "phpMyAdmin", "FileZilla"],
+          answer: "Apache",
+          explanation: "Apache هو السيرفر الذي يشغل ملفات PHP.",
+        },
+        {
+          question: "ما وظيفة SQL؟",
+          options: [
+            "تصميم صفحات ويب",
+            "تنسيق الصفحات",
+            "التعامل مع قواعد البيانات",
+            "تشغيل السيرفر",
+          ],
+          answer: "التعامل مع قواعد البيانات",
+          explanation: "SQL تُستخدم لإنشاء وإدارة قواعد البيانات.",
+        },
+        {
+          question: "PHP لغة تعمل على المتصفح مباشرة.",
+          options: ["صح", "خطأ"],
+          answer: "خطأ",
+          explanation: "PHP تعمل على السيرفر وليس المتصفح.",
+        },
+        {
+          question: "HTML مسؤولة عن شكل الصفحة فقط.",
+          options: ["صح", "خطأ"],
+          answer: "صح",
+          explanation: "HTML مسؤولة عن هيكل ومحتوى الصفحة.",
+        },
+        {
+          question: "SQL تُستخدم للتعامل مع قواعد البيانات.",
+          options: ["صح", "خطأ"],
+          answer: "صح",
+          explanation: "SQL لغة مخصصة للتعامل مع قواعد البيانات.",
+        },
+        {
+          question: "XAMPP برنامج يحتوي على Apache وMySQL.",
+          options: ["صح", "خطأ"],
+          answer: "صح",
+          explanation: "XAMPP يحتوي على Apache وMySQL وPHP.",
+        },
+        {
+          question: "$_POST تُظهر البيانات في شريط العنوان URL.",
+          options: ["صح", "خطأ"],
+          answer: "خطأ",
+          explanation: "البيانات المرسلة بـ POST لا تظهر في شريط العنوان.",
+        },
+        {
+          question: "الأمر INSERT يُستخدم لعرض البيانات من الجدول.",
+          options: ["صح", "خطأ"],
+          answer: "خطأ",
+          explanation: "SELECT هو المستخدم لعرض البيانات، وليس INSERT.",
+        },
+        {
+          question: "echo تُستخدم لطباعة البيانات في PHP.",
+          options: ["صح", "خطأ"],
+          answer: "صح",
+          explanation: "echo تُستخدم لعرض وطباعة البيانات.",
+        },
+        {
+          question: "لا يمكن ربط HTML بقاعدة البيانات بدون PHP.",
+          options: ["صح", "خطأ"],
+          answer: "صح",
+          explanation:
+            "HTML وحدها لا تتعامل مع قواعد البيانات، وتحتاج لغة سيرفر مثل PHP.",
+        },
+        {
+          question: "Apache هو السيرفر الذي يشغل ملفات PHP.",
+          options: ["صح", "خطأ"],
+          answer: "صح",
+          explanation: "Apache هو خادم الويب المسؤول عن تشغيل ملفات PHP.",
+        },
+        {
+          question: "يجب إغلاق الاتصال بقاعدة البيانات بعد الانتهاء.",
+          options: ["صح", "خطأ"],
+          answer: "صح",
+          explanation: "إغلاق الاتصال يوفر الموارد ويحسن الأداء.",
+        },
+        {
+          question: "أي العبارات التالية صحيحة بخصوص طريقتي GET و POST؟",
+          options: [
+            "طريقة GET لا تُظهر المتغيرات في شريط العنوان",
+            "لا يمكن الوصول لمتغيرات POST باستخدام $_REQUEST",
+            "باستخدام POST يمكن إخفاء بيانات النموذج عن شريط العنوان",
+          ],
+          answer: "باستخدام POST يمكن إخفاء بيانات النموذج عن شريط العنوان",
+        },
+        {
+          question: "ما الصيغة الصحيحة للاتصال بقاعدة بيانات MySQL؟",
+          options: [
+            "Mysql_connect($username,$password)",
+            "Connect_mysql($username,$password)",
+            'Mysql_connect("localhost",$username,$password)',
+          ],
+          answer: 'Mysql_connect("localhost",$username,$password)',
+          explanation:
+            "الصيغة الصحيحة للاتصال بقاعدة بيانات MySQL هي تحديد المضيف 'localhost' مع تمرير اسم المستخدم وكلمة المرور لإنشاء الاتصال.",
+        },
+        {
+          question:
+            "ما ناتج تنفيذ الكود التالي؟\nif ('2' == '02') { echo 'true'; } else { echo 'false'; }",
+          options: ["true", "false"],
+          answer: "true",
+          explanation:
+            "عند مقارنة السلاسل '2' و '02' باستخدام == في PHP، يتم تحويلهما إلى أعداد صحيحة قبل المقارنة، و2 == 2 تكون صحيحة، لذا النتيجة 'true'.",
+        },
+
+        {
+          question: "للاتصال بقاعدة البيانات باستخدام PHP نحتاج:",
+          options: [
+            "اسم الجدول فقط",
+            "اسم قاعدة البيانات فقط",
+            "اسم المستخدم وكلمة المرور",
+            "اسم السيرفر + اسم المستخدم + كلمة المرور + اسم قاعدة البيانات",
+          ],
+          answer:
+            "اسم السيرفر + اسم المستخدم + كلمة المرور + اسم قاعدة البيانات",
+          explanation:
+            "لإنشاء اتصال كامل بقاعدة البيانات نحتاج إلى جميع هذه المعلومات لتحديد السيرفر وبيانات الدخول واسم قاعدة البيانات.",
+        },
+        {
+          question: "أي كلاس يُستخدم للاتصال بقاعدة البيانات في PHP؟",
+          options: ["mysql", "db_connect", "mysqli", "connect"],
+          answer: "mysqli",
+          explanation:
+            "كلاس mysqli يُستخدم لإنشاء اتصال بقاعدة البيانات باستخدام PHP بطريقة OOP.",
+        },
+        {
+          question: "أي خاصية تُستخدم لمعرفة فشل الاتصال؟",
+          options: ["error", "connect_error", "query_error", "db_error"],
+          answer: "connect_error",
+          explanation:
+            "خاصية connect_error تُستخدم للتحقق من وجود أي خطأ أثناء محاولة الاتصال بقاعدة البيانات.",
+        },
+        {
+          question: "أي وسم يُستخدم لإنشاء نموذج في HTML؟",
+          options: ["<input>", "<form>", "<table>", "<div>"],
+          answer: "<form>",
+          explanation:
+            "وسم form يُستخدم لإنشاء نموذج يجمع بيانات المستخدم ليتم إرسالها إلى السيرفر.",
+        },
+        {
+          question: "أي خاصية في <form> تحدد الملف الذي يستقبل البيانات؟",
+          options: ["name", "method", "action", "type"],
+          answer: "action",
+          explanation:
+            "خاصية action تحدد الملف أو المسار الذي سيستقبل البيانات المرسلة من النموذج.",
+        },
+        {
+          question: "أي method يُستخدم لإرسال البيانات بشكل آمن؟",
+          options: ["GET", "POST", "SEND", "PUSH"],
+          answer: "POST",
+          explanation:
+            "طريقة POST تُستخدم لإرسال البيانات بشكل آمن حيث لا تظهر البيانات في شريط العنوان.",
+        },
+        {
+          question: "أي وسم يُستخدم لإدخال نص؟",
+          options: ["<label>", "<text>", '<input type="text">', "<textarea>"],
+          answer: '<input type="text">',
+          explanation:
+            "وسم input مع النوع text يُستخدم لإدخال نص قصير من المستخدم داخل النموذج.",
+        },
+      ];
+
+      let currentQuestion = 0;
+      let score = 0;
+      let timeLeft;
+      let timer;
+      let userAnswers = [];
+
+      /* 🔑 الحل الأساسي */
+      function escapeHTML(text) {
+        return text
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;");
+      }
+
+      function checkPassword() {
+        if (document.getElementById("password").value !== "273") {
+          alert("كلمة المرور غير صحيحة");
+          return;
+        }
+
+        timeLeft = document.getElementById("duration").value * 60;
+
+        document.getElementById("login-container").classList.add("hidden");
+        document.getElementById("quiz").classList.remove("hidden");
+
+        loadQuestion();
+        startTimer();
+      }
+
+      function loadQuestion() {
+        const q = questions[currentQuestion];
+        const container = document.getElementById("question-container");
+        container.innerHTML = "";
+
+        const h2 = document.createElement("h2");
+        h2.textContent = q.question;
+        container.appendChild(h2);
+
+        q.options.forEach((opt) => {
+          const label = document.createElement("label");
+          const input = document.createElement("input");
+
+          input.type = "radio";
+          input.name = "option";
+          input.value = opt;
+
+          label.appendChild(input);
+          label.appendChild(document.createTextNode(" " + opt));
+
+          container.appendChild(label);
+        });
+
+        document.getElementById("question-info").textContent = `السؤال ${
+          currentQuestion + 1
+        } من ${questions.length}`;
+      }
+
+      function nextQuestion(e) {
+        e.preventDefault();
+
+        const selected = document.querySelector('input[name="option"]:checked');
+        if (!selected) return alert("اختاري إجابة");
+
+        userAnswers[currentQuestion] = selected.value;
+        if (selected.value === questions[currentQuestion].answer) score++;
+
+        currentQuestion++;
+        if (currentQuestion < questions.length) loadQuestion();
+        else showResults();
+      }
+
+      function showResults() {
+        clearInterval(timer);
+        document.getElementById("quiz").classList.add("hidden");
+        const result = document.getElementById("result");
+        result.classList.remove("hidden");
+        const percent = Math.round((score / questions.length) * 100);
+
+        let feedback = "";
+
+        if (percent >= 85) {
+          feedback = "ممتاز جدًا 🌟";
+        } else if (percent >= 70) {
+          feedback = "جيد جدًا 👍";
+        } else if (percent >= 50) {
+          feedback = "جيد 🙂";
+        } else {
+          feedback = "تحتاج إلى مراجعة ❌";
+        }
+
+        let review = "<h3>مراجعة الإجابات</h3><ul>";
+
+        questions.forEach((q, i) => {
+          const ua = userAnswers[i] || "لم يُجب";
+          const isCorrect = ua === q.answer;
+
+          review += `
+            <li>
+              <strong>${escapeHTML(q.question)}</strong><br>
+              إجابتك:
+              <span class="${isCorrect ? "correct-answer" : "wrong-answer"}">
+                ${escapeHTML(ua)}
+              </span><br>
+              الإجابة الصحيحة:
+              <span class="correct-answer">
+                ${escapeHTML(q.answer)}
+              </span><br>
+              التفسير: ${escapeHTML(q.explanation)}
+            </li>
+          `;
+        });
+
+        review += "</ul>";
+
+        result.innerHTML = `
+  <h2>نتيجة الاختبار</h2>
+
+  <p>
+    الدرجة: ${score} من ${questions.length}
+    <br>
+    النسبة: ${percent}%
+  </p>
+
+  <p><strong>${feedback}</strong></p>
+
+  ${review}
+
+  <button onclick="location.reload()">إعادة المحاولة</button>
+`;
+      }
+
+      function startTimer() {
+        timer = setInterval(() => {
+          timeLeft--;
+          document.getElementById("timer").textContent =
+            Math.floor(timeLeft / 60) +
+            ":" +
+            (timeLeft % 60).toString().padStart(2, "0");
+
+          if (timeLeft <= 0) {
+            clearInterval(timer);
+            showResults();
+          }
+        }, 1000);
+      }
+    </script>
+  </body>
+</html>
